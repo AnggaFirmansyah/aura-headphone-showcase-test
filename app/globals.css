@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+::selection { background: #d9a441; color: #0b0c0e; }
+
+#scene { display: block; cursor: grab; touch-action: none; }
+#scene:active { cursor: grabbing; }
+
+/* entrance: one curve for everything, per-element delay via --d.
+   backwards fill only: a finished entrance must not pin transform, or :active press scale dies */
+.rv { animation: rise .9s cubic-bezier(.22,1,.36,1) var(--d,0s) backwards; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+
+/* hotspot: zero-size anchor positioned by JS; dot + chip hang off it */
+.hs { position: absolute; width: 0; height: 0; will-change: transform }
+.hs .dot { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 9999px;
+           background: #d9a441; box-shadow: 0 0 0 4px rgba(217,164,65,.16) }
+.hs .dot::after { content: ""; position: absolute; inset: -5px; border-radius: 9999px;
+                  border: 1px solid rgba(217,164,65,.7); animation: pulse 2.4s ease-out infinite }
+@keyframes pulse { from { transform: scale(.6); opacity: .9 } to { transform: scale(2.1); opacity: 0 } }
+.hs .chip { position: absolute; left: 50%; top: 0; transform: translate(-50%, calc(-100% - 16px)); white-space: nowrap }
+
+.hint { transition: opacity .8s ease }
+.hint.gone { opacity: 0 }
+
+.sw { position: relative; width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: var(--sw);
+      border: 1px solid rgb(233 234 236 / .16); cursor: pointer;
+      transition: box-shadow .2s ease, transform .2s ease }
+/* 36px dot, 44px touch target */
+.sw::before { content: ""; position: absolute; inset: -4px; border-radius: 9999px }
+.sw:hover { transform: scale(1.06) }
+.sw:active { transform: scale(.94) }
+.sw[aria-pressed="true"] { box-shadow: 0 0 0 2px #0b0c0e, 0 0 0 4px #d9a441 }
+.sw:focus-visible, .btn:focus-visible { outline: 2px solid #d9a441; outline-offset: 3px }
+
+@media (prefers-reduced-motion: reduce) {
+  .rv { animation: none; opacity: 1 }
+  .hs .dot::after { animation: none }
+  .hint { transition: none }
+}
